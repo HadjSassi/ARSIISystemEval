@@ -2,7 +2,7 @@
 fichier_csv = "dataset.csv"
 
 # Chemin vers le nouveau fichier CSV
-nouveau_fichier_csv = "dataset2.csv"
+nouveau_fichier_csv = "data.csv"
 
 # Ouvrir le fichier CSV en lecture
 with open(fichier_csv, 'r', encoding='utf-8') as f_in:
