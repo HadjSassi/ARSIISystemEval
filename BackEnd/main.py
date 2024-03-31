@@ -5,9 +5,7 @@ from flask_cors import CORS
 from service import *
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "http://localhost:8100"}})
-CORS(app, resources={r"/*": {"origins": "http://localhost:4200"}})
-
+CORS(app, resources={r"/subject/*": {"origins": "*"}})
 
 @app.route('/')
 def base():

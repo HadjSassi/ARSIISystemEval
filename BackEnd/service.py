@@ -25,7 +25,7 @@ def getShuffeledQuestions(subjectId):
     subject = subjects.get(subjectId)
     filtered_questions = data[data["Domaine"] == subject]["Question"].tolist()
     random.shuffle(filtered_questions)
-    return filtered_questions[:10]
+    return filtered_questions[:5]
 
 
 def calculateScore(document):
@@ -43,4 +43,4 @@ def calculateScore(document):
     resultverbs = nlp(s1verbs).similarity(nlp(s2verbs))
     resultajds = nlp(s1ajds).similarity(nlp(s2ajds))
     resultnoun = nlp(s1nous).similarity(nlp(s2nous))
-    return s1.similarity(s2),resultverbs,resultajds,resultnoun
+    return s1.similarity(s2),resultverbs,resultajds,resultnoun,correctAnswer

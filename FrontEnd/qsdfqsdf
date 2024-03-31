@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+</head>
+<body>
+<div id="center">
+    <div class="quiz-container">
+        <div id="quiz">
+            <div id="quizquestionContainer">
+                <div id="quizoptionContainer"></div>
+                <div id="results"></div>
+            </div>
+            <div id="quizresultsContainer"></div>
+        </div>
+        <button id="confirm" class="btn btn-default">Confirm</button>
+        <button id="next" class="btn btn-default">Next Question</button>
+        <button id="submit" class="btn btn-default">Show My Result</button>
+    </div>
+</div>
+<script src="./js/jquery.min.js"></script>
+<script type="text/javascript" src="./js/bootstrap.min.js"></script>
+<script type="text/javascript" src="./js/wow.js"></script>
+<script>
+    new WOW().init();
+</script>
+<script type="text/javascript" src="./js/questions.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const isloaded = false;
+        function buildQuiz() {
+            const output = [];
+            myQuestions.forEach((currentQuestion, questionNumber) => {
+                const answers = [];
+                for (abc in currentQuestion.answers) {
+                    answers.push(
+                        `<input id="question${questionNumber}${abc}" type="radio" name="question${questionNumber}" class="with-font" value="${abc}">
+          <label for="question${questionNumber}${abc}">${currentQuestion.answers[abc]}</label>`
+                    );
+                }
+                output.push(
+                    `<div class="slide">
+            <div id="bg">
+              ${currentQuestion.background}
+            </div>
+            <div id="title" class="wow slideInDown">
+              <h2>${currentQuestion.title}</h2>
+            </div>
+            <div class="question wow fadeIn" data-wow-delay="1s" data-wow-duration="2s">
+              <p>${currentQuestion.question}</p>
+            </div>
+            <div class="answers wow fadeIn" data-wow-delay="2s" data-wow-duration="2s">
+              <p>${answers.join("")}</p>
+            </div>
+         </div>`
+                );
+            });
+            quizContainer.innerHTML = output.join("");
+        };
+        function showAnswer() {
+            const answerTextContainers = quizContainer.querySelectorAll(".answers");
+            const answersArray = [];
+            myQuestions.forEach((currentQuestion, questionNumber) => {
+                const answerTextContainer = answerTextContainers[questionNumber];
+                const selector2 = `input[name=question${questionNumber}]:checked`;
+                const userAnswer2 = (answerTextContainer.querySelector(selector2) || {}).value;
+                if (userAnswer2 == currentQuestion.correctAnswer) {
+                    answersArray.push(
+                        `<div class="slide">
+            <div class="answerText wow slideInRight">
+              <p>${currentQuestion.correctAnswerText}</p>
+            </div>
+          </div>`
+                    );
+                } else {
+                    answersArray.push(
+                        `<div class="slide">
+            <div class="answerText wow slideInRight">
+              <p>${currentQuestion.falseAnswerText}</p>
+            </div>
+          </div>`
+                    );
+                }
+            });
+            resultsTextContainer.innerHTML = answersArray.join("");
+            const answerSlides = resultsTextContainer.querySelectorAll(".slide");
+            answerSlides[nSlide].classList.add("active-slide");
+            nSlide = nSlide + 1;
+            nextButton.classList.remove("displaynone");
+            confirmButton.classList.add("disabled");
+            $('.answers').addClass('disabled');
+            if (currentSlide === slides.length - 1) {
+                submitButton.style.display = "inline-block";
+            }
+        };
+        function showResults() {
+            const answerContainers = quizContainer.querySelectorAll(".answers");
+            let numCorrect = 0;
+            myQuestions.forEach((currentQuestion, questionNumber) => {
+                const answerContainer = answerContainers[questionNumber];
+                const selector = `input[name=question${questionNumber}]:checked`;
+                const userAnswer = (answerContainer.querySelector(selector) || {}).value;
+                if (userAnswer === currentQuestion.correctAnswer) {
+                    numCorrect++;
+                }
+            });
+            const quizLength = Number(`${myQuestions.length}`);
+            const quizHalf = Number(`${myQuestions.length}`) / 2;
+            if (numCorrect === quizLength) {
+                resultsContainer.innerHTML = `<div class="wow slideInDown"><h2>Congratulations!</h2></div><div class="wow fadeIn" data-wow-delay="1s" data-wow-duration="2s"><p>Very good, you seem to be a pro!</p><p>You answered ${numCorrect} out of ${myQuestions.length} questions correct.</p><a href="http://geobon.org"><button class="btn btn-default">My Dashboard</button></a></div>`;
+            } else if (numCorrect >= quizHalf && numCorrect < quizLength) {
+                resultsContainer.innerHTML = `<div class="wow slideInDown"><h2>Not bad...</h2></div><div class="wow fadeIn" data-wow-delay="1s" data-wow-duration="2s"><p>but not enough to be a winner.</p><p>You answered just ${numCorrect} out of ${myQuestions.length} questions correct.</p><a href="./index.html"><button id="playAgain" class="btn btn-default">Play again</button></a></div>`;
+            } else {
+                resultsContainer.innerHTML = `<div class="wow slideInDown"><h2>Very bad...</h2></div><div class="wow fadeIn" data-wow-delay="1s" data-wow-duration="2s"><p>You need to practice! All employees need to be familiar with the iDiv Health & Security rules.</p><p>You answered just ${numCorrect} out of ${myQuestions.length} questions correct.</p><a href="./index.html"><button id="playAgain" class="btn btn-default">Play again</button></a></div>`;
+            }
+            $('#title h2').css('display', 'none');
+            $('.question').css('display', 'none');
+            $('.answers').css('display', 'none');
+            submitButton.classList.add("displaynone");
+            nextButton.classList.add("displaynone");
+            confirmButton.classList.add("displaynone");
+            resultsTextContainer.innerHTML = '';
+        };
+        function showSlide(n) {
+            slides[currentSlide].classList.remove("active-slide");
+            slides[n].classList.add("active-slide");
+            currentSlide = n;
+            confirmButton.style.display = "inline-block";
+            submitButton.style.display = "none";
+            nextButton.classList.add("displaynone");
+        };
+        function showNextSlide() {
+            showSlide(currentSlide + 1);
+            resultsTextContainer.innerHTML = '';
+            confirmButton.classList.remove("disabled");
+            $('.answers').removeClass('disabled');
+        };
+        if (isloaded) {
+            const quizContainer = document.getElementById("quizoptionContainer");
+            const resultsContainer = document.getElementById("results");
+            const resultsTextContainer = document.getElementById("quizresultsContainer");
+            buildQuiz();
+            const confirmButton = document.getElementById("confirm");
+            const nextButton = document.getElementById("next");
+            const submitButton = document.getElementById("submit");
+            const slides = document.querySelectorAll(".slide");
+            const answers = document.querySelectorAll(".answers");
+            let currentSlide = 0;
+            let nSlide = 0;
+            confirmButton.addEventListener("click", showAnswer);
+            nextButton.addEventListener("click", showNextSlide);
+            submitButton.addEventListener("click", showResults);
+            console.log(myQuestions);}});</script></body></html>

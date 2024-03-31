@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>SmartEnv</title>
+    <link type="text/css" rel="stylesheet" href="./css/bootstrap.min.css">
+    <link type="text/css" rel="stylesheet" href="./css/animate.css">
+    <link type="text/css" rel="stylesheet" href="./css/font-awesome.min.css">
+    <link type="text/css" rel="stylesheet" href="./css/custom.css">
+    <link rel="icon" type="image/x-icon" href="../assets/img/arsii.png">
+</head>
+<body>
+<div id="center">
+    <div class="quiz-container">
+        <div id="quiz">
+            <div id="quizquestionContainer">
+                <div id="quizoptionContainer"></div>
+                <div id="results"></div>
+            </div>
+            <div id="quizresultsContainer"></div>
+        </div>
+        <button id="confirm" class="btn btn-default">Confirmer</button>
+        <button id="next" class="btn btn-default">Question Suivant</button>
+        <button id="submit" class="btn btn-default">Afficher Resultat</button>
+    </div>
+</div>
+<script src="./js/jquery.min.js"></script>
+<script type="text/javascript" src="./js/bootstrap.min.js"></script>
+<script type="text/javascript" src="./js/wow.js"></script>
+<script>
+    new WOW().init();
+</script>
+<script type="text/javascript" src="./js/questions.js"></script>
+<script>
+    function getUrlParameter(name){...}
+    (function () {
+        document.addEventListener("DOMContentLoaded", async function () {
+            var titleParam = getUrlParameter('title');
+            document.title = titleParam + ' - SmartEnv';
+            function buildQuiz(){...}
+            function showAnswer(){...}
+            function showResults(){...}
+            function showNextSlide(){...}
+            const quizContainer = document.getElementById("quizoptionContainer");
+            const resultsContainer = document.getElementById("results");
+            const resultsTextContainer = document.getElementById("quizresultsContainer");
+            const slides = document.querySelectorAll(".slide");
+            let currentSlide = 0;
+            let nSlide = 0;
+            const myQuestions2 = [];
+            function showSlide(n) {
+                slides[currentSlide].classList.remove("active-slide");
+                slides[n].classList.add("active-slide");
+                currentSlide = n;
+                confirmButton.style.display = "inline-block";
+                submitButton.style.display = "none";
+                nextButton.classList.add("displaynone");
+            }
+            var idvar = getUrlParameter('id');
+            try {
+                let response = await fetch("http://127.0.0.1:5000/subject?id=" + idvar);
+                if (!response.ok) {
+                    throw new Error("HTTP error " + response.status);
+                }
+                let questions = await response.json();
+                questions.forEach((question, index) => {
+                    myQuestions.push({
+                        title: `Question ${index + 1}`,
+                        question: question,
+                        background: "<img src='./img/" + (index + 1) + ".jpg'>",
+                        answers: {},
+                        correctAnswer: "",
+                        correctAnswerText: "",
+                        falseAnswerText: ""
+                    });
+                });
+                buildQuiz();
+                const confirmButton = document.getElementById("confirm");
+                const nextButton = document.getElementById("next");
+                const submitButton = document.getElementById("submit");
+                showSlide(0);
+                confirmButton.addEventListener("click", showAnswer);
+                nextButton.addEventListener("click", showNextSlide);
+                submitButton.addEventListener("click", showResults);
+                // Call the function that uses myQuestions2 here, or trigger an event that will call that function
+            } catch (error) {
+                console.error("Fetch failed: ", error);
+            }
+        });
+    })();
+</script>
+</body>
+</html>
